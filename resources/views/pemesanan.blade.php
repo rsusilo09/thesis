@@ -31,33 +31,21 @@
                 Jumlah
                 </div>
 			</div>
-			@for($a=0;$a<$countFood; $a++)
+			@for($a=0;$a<$countMenu; $a++)
 			<div class="form-group">
 				<div class="col-md-9">
-				{{$posFood[$a]->menu}}{!! Form::hidden('jenisFood'.$a, $posFood[$a]->menu) !!}
+				{{$posMenu[$a]->menu}}{!! Form::hidden('jenisFood'.$a, $posMenu[$a]->menu) !!}
 				</div>
 				<div class="col-md-2">
-				Rp. {{$posFood[$a]->harga}}
+				Rp. {{$posMenu[$a]->harga}}
 				</div>
 				<div class="col-md-1">
-                    <input type="text" class="form-control" id="jumlahFood{{$a}}">
+                    <!-- <input type="text" class="form-control" id="jumlahFood{{$a}}"> -->
+					{!! Form::text('jumlahFood'. $a, null, ['class' => 'form-control']) !!}
                 </div>
 			</div>
 			@endfor
 
-			@for($b=0;$b<$countDrink; $b++)
-			<div class="form-group">
-				<div class="col-md-9">
-				{{$posDrink[$b]->menu}}{!! Form::hidden('jenisDrink'.$b, $posDrink[$b]->menu) !!}
-				</div>
-				<div class="col-md-2">
-				Rp. {{$posDrink[$b]->harga}}
-				</div>
-				<div class="col-md-1">
-                    <input type="text" class="form-control" id="jumlahDrink{{$b}}">
-                </div>
-			</div>
-			@endfor
 			<div class="form-group col-sm-offset-4 col-md-4">
 				<button type="submit" class="btn btn-primary form-control">Submit</button>
 			</div>

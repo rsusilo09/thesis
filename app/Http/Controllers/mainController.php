@@ -19,12 +19,17 @@ class mainController extends Controller
 		$drink = DB::table('menu')
 			->where('jenis', 'minuman')
 			->get();
+		$menu = DB::table('menu')
+			->orderBy('jenis', 'asc')
+			->get();
+		$countMenu = $menu->count();
+		$posMenu = $menu->values();
 		$countFood = $food->count();
 		$countDrink = $drink->count();
 		$posFood = $food->values();
 		$posDrink = $drink->values();
 
-		return view('pemesanan', compact('countFood', 'countDrink', 'posFood', 'posDrink'));
+		return view('pemesanan', compact('countFood', 'countDrink', 'posFood', 'posDrink', 'posMenu', 'countMenu'));
 	}
 
 	function pesan()
@@ -42,12 +47,12 @@ class mainController extends Controller
 		$meja = 'Table 1';
 
 		$order = orderan::all();
-
+		
 		for($a=0; $a<$countFood; $a++)
 		{
 			$jenis = Input::get('jenisFood'.$a);
 			$jumlah = Input::get('jumlahFood'.$a);
-
+			var_dump($jumlah);
 			$order = new orderan();
 
 			if($jumlah != 0 )
@@ -68,12 +73,15 @@ class mainController extends Controller
 
 			$order = new orderan();
 
-			$order->menu = $jenis;
-			$order->jumlah = $jumlah;
-			$order->meja = $meja;
-			$order->paid = '0';
-			$order->cooking = '0';
-			$order->save();
+			if($jumlah != 0 )
+			{
+				$order->menu = $jenis;
+				$order->jumlah = $jumlah;
+				$order->meja = $meja;
+				$order->paid = '0';
+				$order->cooking = '0';
+				$order->save();
+			}
 		}
 
 		return view('pemesanan', compact('countFood', 'countDrink', 'posFood', 'posDrink'));
