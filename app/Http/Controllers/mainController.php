@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Table\menu;
 use App\Table\orderan;
 use DB;
@@ -11,182 +12,246 @@ use Redirect;
 
 class mainController extends Controller
 {
-    function order()
-	{
-		$food = DB::table('menu')
-			->where('jenis', 'makanan')
+	function login(){
+		$username = Input::get('username');
+		$password = Input::get('password');
+
+		$account = DB::table('account')
+			->where('username', $username)
 			->get();
-		$drink = DB::table('menu')
-			->where('jenis', 'minuman')
+		
+		$pos = $account->values();
+		
+		if($password == $pos[0]->password){
+			if($pos[0]->type == 0){
+				return redirect()->route('userHome')->withCookie(cookie('account_id', $pos[0]->id));
+			}
+			else{
+				return redirect()->route('restaurantHome')->withCookie(cookie('restaurant_id', $pos[0]->restaurant_id));
+			}
+		}
+	}
+
+	function userHome(Request $request){
+		$id = $request->cookie('account_id');
+		
+		$account = DB::table('account')
+			->where('id', $id)
 			->get();
+		
+		$pos = $account->values();
+		$pos = $pos[0];
+
+		$restaurant = DB::table('restaurant')
+			->get();
+		
+		$posRestaurant = $restaurant->values();
+		$countRestaurant = $restaurant->count();
+
+		return view('User/homepage', compact('pos', 'posRestaurant', 'countRestaurant'));
+	}
+
+	function restaurantHome(Request $request){
+		$id = $request->cookie('restaurant_id');
+		
+		$restaurant = DB::table('restaurant')
+			->where('id', $id)
+			->get();
+
+		$pos = $restaurant->values();
+		$pos = $pos[0];
+
+		$listReserve = orderan::select('account_id')
+			->where([
+				['restaurant_id', '=', $id],
+				['is_arrive', '=', '0']
+			])
+			->groupBy('account_id')
+			->get();
+
+		$countReserve = $listReserve->count();
+		$posReserve = $listReserve->values();
+
+		$sorts = orderan::select('account_id')
+			->where([
+				['paid', '=', '0'],
+				['cooking', '=', '0'],
+				['is_arrive', '=', '1']
+			])
+			->groupBy('account_id')
+			->get();
+
+		$orders = DB::table('orderan')
+			->where([
+				['paid', '=', '0'],
+				['cooking', '=', '0']
+			])
+			->get();
+
+		$countOrder = $orders->count();
+		$posOrder = $orders->values();
+
+		$pay = orderan::select('account_id')
+			->where([
+				['paid', '=', '0'],
+				['cooking', '=', '1'],
+				['is_arrive', '=', '1']
+			])
+			->groupBy('account_id')
+			->get();
+
+		$posPay = $pay->values();
+
+		return view('Restaurant/homepage', compact('pos', 'posReserve', 'countOrder', 'posOrder', 'sorts', 'posPay'	));
+	}
+
+    function getMenu(Request $request){
+		$menu = DB::table('menu')
+			->orderBy('jenis', 'asc')
+			->where('restaurant_id', $request->restaurant_id)
+			->get();
+			
+		$countMenu = $menu->count();
+		$posMenu = $menu->values();
+
+		$id = $request->cookie('account_id');
+		$account = DB::table('account')
+			->where('id', $id)
+			->get();
+
+		$pos = $account->values();
+		
+		return view('pemesanan', compact('posMenu', 'countMenu', 'pos'))->withCookie(cookie('restaurant_id', $request->restaurant_id));;
+	}
+
+	function pesan(Request $request){
 		$menu = DB::table('menu')
 			->orderBy('jenis', 'asc')
 			->get();
-		$countMenu = $menu->count();
-		$posMenu = $menu->values();
-		$countFood = $food->count();
-		$countDrink = $drink->count();
-		$posFood = $food->values();
-		$posDrink = $drink->values();
 
-		return view('pemesanan', compact('countFood', 'countDrink', 'posFood', 'posDrink', 'posMenu', 'countMenu'));
-	}
-
-	function pesan()
-	{
-		$food = DB::table('menu')
-			->where('jenis', 'makanan')
-			->get();
-		$drink = DB::table('menu')
-			->where('jenis', 'minuman')
-			->get();
-		$countFood = $food->count();
-		$countDrink = $drink->count();
-		$posFood = $food->values();
-		$posDrink = $drink->values();
-		$meja = 'Table 1';
+		$account = $request->cookie('account_id');
+		$restaurant = $request->cookie('restaurant_id');
 
 		$order = orderan::all();
-		
-		for($a=0; $a<$countFood; $a++)
-		{
-			$jenis = Input::get('jenisFood'.$a);
-			$jumlah = Input::get('jumlahFood'.$a);
-			var_dump($jumlah);
+		$a = 0;
+
+		foreach ($menu as $item) {
+
+			$jenis = Input::get('jenisMenu'.$a);
+			$jumlah = Input::get('jumlahMenu'.$a);
 			$order = new orderan();
+
+			$a += 1;
 
 			if($jumlah != 0 )
 			{
 				$order->menu = $jenis;
 				$order->jumlah = $jumlah;
-				$order->meja = $meja;
-				$order->paid = '0';
-				$order->cooking = '0';
+				$order->account_id = $account;
+				$order->restaurant_id = $restaurant;
 				$order->save();
 			}
 		}
 
-		for($a=0; $a<$countDrink; $a++)
-		{
-			$jenis = Input::get('jenisDrink'.$a);
-			$jumlah = Input::get('jumlahDrink'.$a);
-
-			$order = new orderan();
-
-			if($jumlah != 0 )
-			{
-				$order->menu = $jenis;
-				$order->jumlah = $jumlah;
-				$order->meja = $meja;
-				$order->paid = '0';
-				$order->cooking = '0';
-				$order->save();
-			}
-		}
-
-		return view('pemesanan', compact('countFood', 'countDrink', 'posFood', 'posDrink'));
+		return redirect()->route('pay', ['restaurant_id' => $restaurant, 'account_id' => $account]);
 	}
 
-	function cook()
-	{
-		$sorts = orderan::select('meja')
-			->where('paid', '0')
-			->where('cooking', '0')
-			->groupBy('meja')
-			->get();
-
-		$orders = DB::table('orderan')
-			->where('paid', '0')
-			->where('cooking', '0')
-			->get();
-
-		$count = $orders->count();
-		$pos = $orders->values();
-
-		return view('cooking', compact('pos', 'orders', 'sorts', 'count'));
-	}
-
-	function doneCook($a)
-	{
-		$sorts = orderan::select('meja')
-			->where('paid', '0')
-			->where('cooking', '0')
-			->groupBy('meja')
-			->get();
-
-		$orders = DB::table('orderan')
-			->where('paid', '0')
-			->where('cooking', '0')
-			->get();
-
-		$count = $orders->count();
-		$pos = $orders->values();
-
-		$id = $orders[$a]->id;
+	function doneCook(Request $request){
+		$accountId = $request->account_id;
+		$restaurant_id = $request->restaurant_id;
+		$menuId = $request->id;
 
 		DB::table('orderan')
-		->where('id', $id)
-		->where('cooking', '0')
-		->where('paid', '0')
-		->update(['cooking' => '1']);
+			->where([
+				['id', '=', $menuId],
+				['account_id', '=', $accountId],
+				['restaurant_id', '=', $restaurant_id],
+				['cooking', '=', '0'],
+				['paid', '=', '0'],
+				['is_arrive', '=', '1']
+			])
+			->update(['cooking' => '1']);
 
-		return redirect()->to('cooking');
+		return redirect()->route('restaurantHome');
 	}
 
-	function bills()
-	{
-		$bill = orderan::select('meja')
-			->where('paid', '0')
-			->groupBy('meja')
+	function pay(Request $request){
+		$order = DB::table('orderan')
+			->where([
+				['account_id', '=', $request->account_id],
+				['restaurant_id', '=', $request->restaurant_id]
+			])
 			->get();
 
-		$count = $bill->count();
-		$pos = $bill->values();
+		$count = $order->count();
+		$pos = $order->values();
 
-
-		return view ('bills', compact('count', 'pos', 'test'));
+		return view('payment', compact('pos', 'total', 'order'));
 	}
 
-	function pay($a)
+  function paid(Request $request){
+	$accountId = $request->account_id;
+	$restaurantId = $request->restaurant_id;
+
+	$accountCookies = $request->cookie('account_id');
+	$total = 0;
+
+	$transaction = DB::table('orderan')
+		->leftJoin('menu', 'orderan.menu', '=', 'menu.menu')
+		->where([
+			['account_id', '=', $accountId],
+			// ['restaurant_id', '=', $restaurantId],
+			['cooking', '=', '1'],
+			['paid', '=', '0']
+		])
+		->get();
+	
+	$posTransaxtion = $transaction->values();
+
+	foreach ($posTransaxtion as $item) {
+		$total += ($item->jumlah * $item->harga);
+	}
+
+	if($accountCookies)
 	{
-		$all = orderan::select('meja')
-      ->where('paid', '0')
-      ->groupBy('meja')
-      ->get();
+		$account = DB::table('account')
+			->where('id', $accountCookies)
+			->get();
 
-    $values = $all->values();
-    $meja = $values[$a]->meja;
+		$posAccount = $account->values();
 
-    $sort = DB::table('orderan')
-      ->leftJoin('menu', 'orderan.menu', '=', 'menu.menu')
-      ->where('meja', $meja)
-      ->where('paid', '0')
-      ->get();
+		$balance = $posAccount[0]->credit;
 
-    $count = $sort->count();
-    $pos = $sort->values();
+		if($balance >= $total){
+			$balance -= $total;
 
-    $total = 0;
-
-    for($b=0; $b<$count; $b++)
-    {
-      $harga = $pos[$b]->harga;
-      $jumlah = $pos[$b]->jumlah;
-      $temp = $harga * $jumlah;
-
-      $total = $total + $temp;
-    }
-
-		return view('payment', compact('meja', 'count', 'pos', 'total'));
+			DB::table('account')
+				->where('id', $accountCookies)
+				->update(['credit' => $balance]);
+		}
 	}
 
-  function paid($meja)
-  {
     DB::table('orderan')
-		->where('meja', $meja)
-		->where('paid', '0')
+		->where([
+				['account_id', '=', $accountId],
+				['restaurant_id', '=', $restaurant_id],
+				['cooking', '=', '1'],
+				['paid', '=', '0'],
+				['is_arrive', '=', '1']
+		])
 		->update(['paid' => '1']);
 
-		return redirect()->to('bills');
+	return redirect()->route('userHome');
+  }
+
+  function arrive(Request $request){
+    DB::table('orderan')
+		->where([
+			['account_id', '=', $request->account_id],
+			['is_arrive', '=', '0']
+		])
+		->update(['is_arrive' => '1']);
+
+		return redirect()->route('restaurantHome');
   }
 }

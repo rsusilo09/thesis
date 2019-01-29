@@ -15,16 +15,13 @@
           <h3 class="box-title">Daftar Menu</h3>
 
           <div class="box-tools pull-right">
-				Table 1
+				{{$pos[0]->name}}
 		  </div>
         </div>
         <div class="box-body">
 			{!! Form::open(array('route' => 'pesan', 'method' => 'POST')) !!}
 			<div class="form-group">
-				<div class="col-md-9">
-				<h5>Menu</h5>
-				</div>
-				<div class="col-md-2">
+				<div class="col-md-offset-9 col-md-2">
 				Harga
 				</div>
 				<div class="col-md-1">
@@ -34,20 +31,19 @@
 			@for($a=0;$a<$countMenu; $a++)
 			<div class="form-group">
 				<div class="col-md-9">
-				{{$posMenu[$a]->menu}}{!! Form::hidden('jenisFood'.$a, $posMenu[$a]->menu) !!}
+				{{$posMenu[$a]->menu}}{!! Form::hidden('jenisMenu'.$a, $posMenu[$a]->menu) !!}
 				</div>
 				<div class="col-md-2">
 				Rp. {{$posMenu[$a]->harga}}
 				</div>
 				<div class="col-md-1">
-                    <!-- <input type="text" class="form-control" id="jumlahFood{{$a}}"> -->
-					{!! Form::text('jumlahFood'. $a, null, ['class' => 'form-control']) !!}
+					{!! Form::text('jumlahMenu'. $a, null, ['class' => 'form-control']) !!}
                 </div>
 			</div>
 			@endfor
 
 			<div class="form-group col-sm-offset-4 col-md-4">
-				<button type="submit" class="btn btn-primary form-control">Submit</button>
+				<button type="submit" class="btn btn-primary form-control">Order</button>
 			</div>
 		</table>
 		{!! Form::close() !!}

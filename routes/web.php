@@ -15,14 +15,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('order', 'mainController@order');
-Route::get('cooking', 'mainController@cook');
-Route::get('bills', 'mainController@bills');
+Route::post('login', ['uses'=>'mainController@login', 'as'=>'login']);
 
+// User Routes
+Route::get('userHome', ['uses'=>'mainController@userHome', 'as'=>'userHome']);
+Route::get('menu/{restaurant_id}', 'mainController@getMenu');
 Route::post('pesan', ['as'=>'pesan', 'uses'=>'mainController@pesan']);
 
-Route::get('doneCook/{a}', ['uses'=>'mainController@doneCook', 'as' => 'doneCook']);
+// Restaurant Routes
+Route::get('restaurantHome', ['uses'=>'mainController@restaurantHome', 'as'=>'restaurantHome']);
+Route::get('arrive/{account_id}', ['uses'=>'mainController@arrive', 'as'=>'arrive']);
+Route::get('doneCook/{restaurant_id}/{account_id}/{id}', ['uses'=>'mainController@doneCook', 'as' => 'doneCook']);
 
-Route::get('pay/{a}', ['uses'=>'mainController@pay', 'as' => 'pay']);
+Route::get('pay/{restaurant_id}/{account_id}', ['uses'=>'mainController@pay', 'as' => 'pay']);
 
-Route::get('paid/{meja}', ['as'=>'paid', 'uses'=>'mainController@paid']);
+Route::get('paid/{restaurant_id}/{account_id}', ['as'=>'paid', 'uses'=>'mainController@paid']);
