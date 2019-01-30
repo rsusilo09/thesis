@@ -27,7 +27,7 @@ class mainController extends Controller
 		if($password == $pos[0]->password){
 			if($pos[0]->type == 0){
 				$request->session()->put(['name' => $pos[0]->name, 'credit' => $pos[0]->credit]);
-				return redirect()->route('userHome')->withCookie(cookie('aacount_id', $pos[0]->id));
+				return redirect()->route('userHome')->withCookie(cookie('account_id', $pos[0]->id));
 			}
 			else{
 				return redirect()->route('restaurantHome')->withCookie(cookie('restaurant_id', $pos[0]->restaurant_id));
@@ -156,7 +156,6 @@ class mainController extends Controller
 				$order->save();
 			}
 		}
-
 		return redirect()->route('pay', ['restaurant_id' => $restaurant, 'account_id' => $account])->with('alert', 'Your order has been saved');
 	}
 
@@ -180,6 +179,10 @@ class mainController extends Controller
 	}
 
 	function pay(Request $request){
+		$name = $request->session()->get('name');
+		$credit = $request->session()->get('credit');
+		$restaurant = $request->session()->get('restaurant_id');
+
 		$order = DB::table('orderan')
 			->where([
 				['account_id', '=', $request->account_id],
@@ -190,7 +193,7 @@ class mainController extends Controller
 		$count = $order->count();
 		$pos = $order->values();
 
-		return view('payment', compact('pos', 'total', 'order'));
+		return view('payment', compact('pos', 'total', 'order', 'name', 'credit'));
 	}
 
   function paid(Request $request){
