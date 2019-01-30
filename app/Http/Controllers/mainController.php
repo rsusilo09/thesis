@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use App\Table\menu;
 use App\Table\orderan;
 use DB;
 use Input;
 use Redirect;
+use Alert;
 
 class mainController extends Controller
 {
-	function login(){
+	function login(Request $request){
 		$username = Input::get('username');
 		$password = Input::get('password');
 
@@ -24,7 +26,8 @@ class mainController extends Controller
 		
 		if($password == $pos[0]->password){
 			if($pos[0]->type == 0){
-				return redirect()->route('userHome')->withCookie(cookie('account_id', $pos[0]->id));
+				$request->session()->put(['name' => $pos[0]->name, 'credit' => $pos[0]->credit]);
+				return redirect()->route('userHome');
 			}
 			else{
 				return redirect()->route('restaurantHome')->withCookie(cookie('restaurant_id', $pos[0]->restaurant_id));
@@ -33,22 +36,16 @@ class mainController extends Controller
 	}
 
 	function userHome(Request $request){
-		$id = $request->cookie('account_id');
+		$name = $request->session()->get('name');
+		$credit = $request->session()->get('credit');
 		
-		$account = DB::table('account')
-			->where('id', $id)
-			->get();
-		
-		$pos = $account->values();
-		$pos = $pos[0];
-
 		$restaurant = DB::table('restaurant')
 			->get();
 		
 		$posRestaurant = $restaurant->values();
 		$countRestaurant = $restaurant->count();
-
-		return view('User/homepage', compact('pos', 'posRestaurant', 'countRestaurant'));
+		
+		return view('User/homepage', compact('posRestaurant', 'countRestaurant', 'name', 'credit'));
 	}
 
 	function restaurantHome(Request $request){
@@ -153,7 +150,7 @@ class mainController extends Controller
 			}
 		}
 
-		return redirect()->route('pay', ['restaurant_id' => $restaurant, 'account_id' => $account]);
+		return redirect()->route('pay', ['restaurant_id' => $restaurant, 'account_id' => $account])->with('alert', 'Your order has been saved');
 	}
 
 	function doneCook(Request $request){

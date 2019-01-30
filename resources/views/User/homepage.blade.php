@@ -49,14 +49,14 @@
                 <!-- The user image in the navbar-->
                 {{-- <img src="../../dist/img/user2-160x160.jpg" class="user-image" alt="User Image"> --}}
                 <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                <span class="hidden-xs">{{$pos->name}}</span>
+                <span class="hidden-xs">{{$name}}</span>
               </a>
               <ul class="dropdown-menu">
                 <!-- Menu Body -->
                 <li class="user-body">
                   <div class="row">
                     <div class="col-xs-12 text-center">
-                      <a href="#">Credit: Rp {{$pos->credit}}</a>
+                      <a href="#">Credit: Rp {{$credit}}</a>
                     </div>
                   </div>
                   <!-- /.row -->
