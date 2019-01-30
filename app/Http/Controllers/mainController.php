@@ -27,7 +27,7 @@ class mainController extends Controller
 		if($password == $pos[0]->password){
 			if($pos[0]->type == 0){
 				$request->session()->put(['name' => $pos[0]->name, 'credit' => $pos[0]->credit]);
-				return redirect()->route('userHome');
+				return redirect()->route('userHome')->withCookie(cookie('aacount_id', $pos[0]->id));
 			}
 			else{
 				return redirect()->route('restaurantHome')->withCookie(cookie('restaurant_id', $pos[0]->restaurant_id));
@@ -103,6 +103,9 @@ class mainController extends Controller
 	}
 
     function getMenu(Request $request){
+		$name = $request->session()->get('name');
+		$credit = $request->session()->get('credit');
+
 		$menu = DB::table('menu')
 			->orderBy('jenis', 'asc')
 			->where('restaurant_id', $request->restaurant_id)
@@ -118,17 +121,21 @@ class mainController extends Controller
 
 		$pos = $account->values();
 		
-		return view('pemesanan', compact('posMenu', 'countMenu', 'pos'))->withCookie(cookie('restaurant_id', $request->restaurant_id));;
+		$request->session()->put('restaurant_id', $request->restaurant_id);
+		return view('pemesanan', compact('posMenu', 'countMenu', 'pos', 'name', 'credit'));
 	}
 
 	function pesan(Request $request){
+		$name = $request->session()->get('name');
+		$credit = $request->session()->get('credit');
+		$restaurant = $request->session()->get('restaurant_id');
+
 		$menu = DB::table('menu')
 			->orderBy('jenis', 'asc')
 			->get();
 
 		$account = $request->cookie('account_id');
-		$restaurant = $request->cookie('restaurant_id');
-
+		
 		$order = orderan::all();
 		$a = 0;
 

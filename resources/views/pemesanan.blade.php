@@ -13,10 +13,6 @@
 	<div class="box">
         <div class="box-header with-border">
           <h3 class="box-title">Daftar Menu</h3>
-
-          <div class="box-tools pull-right">
-				{{$pos[0]->name}}
-		  </div>
         </div>
         <div class="box-body">
 			{!! Form::open(array('route' => 'pesan', 'method' => 'POST')) !!}
