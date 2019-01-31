@@ -49,13 +49,13 @@
                 <!-- The user image in the navbar-->
                 {{-- <img src="../../dist/img/user2-160x160.jpg" class="user-image" alt="User Image"> --}}
                 <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                <span class="hidden-xs">{{$pos->name}}</span>
+                <span class="hidden-xs">{{$name}}</span>
               </a>
               <ul class="dropdown-menu">
                 <!-- Menu Footer-->
                 <li class="user-footer">
                   <div class="pull-right">
-                    <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                    <a href="{{URL::route('logout')}}" class="btn btn-default btn-flat">Sign out</a>
                   </div>
                 </li>
               </ul>
@@ -73,6 +73,13 @@
       
       <!-- Main content -->
       <div class="col-md-12">
+                  @if(session('alert'))
+                  <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h4><i class="icon fa fa-check"></i> SUCCESS!</h4>
+                    {{session('alert')}}
+                  </div>
+                  @endif
             <div class="nav-tabs-custom">
               <ul class="nav nav-tabs">
                 <li class="active"><a href="#reservation" data-toggle="tab">Reservation</a></li>
@@ -82,18 +89,19 @@
               <div class="tab-content">
                 <div class="active tab-pane" id="reservation">
                         <div class="bills">
-                            <center>
-                                <table width="400px">
+                                <table>
                                 @foreach ($posReserve as $item)
+                                  @foreach ($posAccount as $acc)
                                     <tr>
                                         <td>
-                                            {{-- <button onclick="location.href='{{url('arrive', $item->account_id)}}'">{{$item->account_id}}</button> --}}
-                                        <a href="{{URL::route('arrive', $item->account_id)}}" class="btn btn-default">{{$item->account_id}}</a>
+                                        @if($acc->id == $item->account_id)
+                                        <a href="{{URL::route('arrive', $item->account_id)}}" class="btn btn-default">{{$acc->name}}</a>
+                                        @endif
                                         </td>
                                     </tr>
+                                  @endforeach
                                 @endforeach
                                 </table>
-                            </center>
                         </div>
                   
                 </div>
@@ -122,15 +130,19 @@
   
                 <div class="tab-pane" id="payment">
                         <div class="bills">
-                                <center>
-                                    <table width="400px">
-                                    @foreach ($posPay as $item)
-                                        <tr>
-                                            <td><a href="{{URL::route('pay', [$item->restaurant_id, $item->account_id])}}" class="btn btn-default">{{$item->account_id}}</a></td>
-                                        </tr>
-                                    @endforeach
-                                    </table>
-                                </center>
+                                <table>
+                                @foreach ($posPay as $item)
+                                  @foreach ($posAccount as $acc)
+                                    <tr>
+                                        <td>
+                                        @if($acc->id == $item->account_id)
+                                        <a href="{{URL::route('pay', [$item->restaurant_id, $item->account_id])}}" class="btn btn-default">{{$acc->name}}</a>
+                                        @endif
+                                        </td>
+                                    </tr>
+                                  @endforeach
+                                @endforeach
+                                </table>
                             </div>
                 </div>
                 <!-- /.tab-pane -->

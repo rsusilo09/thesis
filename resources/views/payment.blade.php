@@ -82,18 +82,18 @@
       <!-- Main content -->
         <div>
             <div class="box">
-              <div class="box-header">
-                <h3 class="box-title">Your Order</h3>
-              </div>
-              <!-- /.box-header -->
-              <div class="box-body no-padding">
                   @if(session('alert'))
                   <div class="alert alert-success alert-dismissible">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <h4><i class="icon fa fa-check"></i> SUCCESS!</h4>
                     {{session('alert')}}
                   </div>
-                @endif
+                  @endif
+              <div class="box-header">
+                <h3 class="box-title">Your Order</h3>
+              </div>
+              <!-- /.box-header -->
+              <div class="box-body no-padding">
                 <table class="table">
                   @foreach ($pos as $item)
                     <tr>
@@ -104,7 +104,7 @@
                     </tr>
                   @endforeach
                 </table>
-                <button onclick="location.href='{{route('paid', [$item->restaurant_id, $item->account_id])}}'" type="button" class="btn btn-info col-md-3 col-md-offset-5">Pay</button>
+                <button onclick="location.href='{{route('paid', [$restaurant, $id])}}'" type="button" class="btn btn-info col-md-3 col-md-offset-5">Pay</button>
               </div>
               <!-- /.box-body -->
             </div>

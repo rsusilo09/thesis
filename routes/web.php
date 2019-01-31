@@ -16,6 +16,9 @@ Route::get('/', function () {
 });
 
 Route::post('login', ['uses'=>'mainController@login', 'as'=>'login']);
+Route::get('logout', ['uses'=>'mainController@signOut', 'as'=>'logout']);
+Route::get('pay/{restaurant_id}/{account_id}', ['uses'=>'mainController@pay', 'as' => 'pay']);
+Route::get('paid/{restaurant_id}/{account_id}', ['as'=>'paid', 'uses'=>'mainController@paid']);
 
 // User Routes
 Route::get('userHome', ['uses'=>'mainController@userHome', 'as'=>'userHome']);
@@ -27,6 +30,4 @@ Route::get('restaurantHome', ['uses'=>'mainController@restaurantHome', 'as'=>'re
 Route::get('arrive/{account_id}', ['uses'=>'mainController@arrive', 'as'=>'arrive']);
 Route::get('doneCook/{restaurant_id}/{account_id}/{id}', ['uses'=>'mainController@doneCook', 'as' => 'doneCook']);
 
-Route::get('pay/{restaurant_id}/{account_id}', ['uses'=>'mainController@pay', 'as' => 'pay']);
 
-Route::get('paid/{restaurant_id}/{account_id}', ['as'=>'paid', 'uses'=>'mainController@paid']);

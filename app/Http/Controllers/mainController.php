@@ -30,6 +30,7 @@ class mainController extends Controller
 				return redirect()->route('userHome')->withCookie(cookie('account_id', $pos[0]->id));
 			}
 			else{
+				$request->session()->put('name', $pos[0]->name);
 				return redirect()->route('restaurantHome')->withCookie(cookie('restaurant_id', $pos[0]->restaurant_id));
 			}
 		}
@@ -49,14 +50,13 @@ class mainController extends Controller
 	}
 
 	function restaurantHome(Request $request){
+		$name = $request->session()->get('name');
 		$id = $request->cookie('restaurant_id');
 		
-		$restaurant = DB::table('restaurant')
-			->where('id', $id)
+		$account = DB::table('account')
 			->get();
 
-		$pos = $restaurant->values();
-		$pos = $pos[0];
+		$posAccount = $account->Values();
 
 		$listReserve = orderan::select('account_id')
 			->where([
@@ -99,7 +99,7 @@ class mainController extends Controller
 
 		$posPay = $pay->values();
 
-		return view('Restaurant/homepage', compact('pos', 'posReserve', 'countOrder', 'posOrder', 'sorts', 'posPay'	));
+		return view('Restaurant/homepage', compact('posAccount', 'posReserve', 'countOrder', 'posOrder', 'sorts', 'posPay', 'name'));
 	}
 
     function getMenu(Request $request){
@@ -182,6 +182,7 @@ class mainController extends Controller
 		$name = $request->session()->get('name');
 		$credit = $request->session()->get('credit');
 		$restaurant = $request->session()->get('restaurant_id');
+		$id = $request->cookie('account_id');
 
 		$order = DB::table('orderan')
 			->where([
@@ -193,7 +194,7 @@ class mainController extends Controller
 		$count = $order->count();
 		$pos = $order->values();
 
-		return view('payment', compact('pos', 'total', 'order', 'name', 'credit'));
+		return view('payment', compact('pos', 'total', 'order', 'name', 'credit', 'restaurant', 'id'));
 	}
 
   function paid(Request $request){
@@ -248,7 +249,13 @@ class mainController extends Controller
 		])
 		->update(['paid' => '1']);
 
-	return redirect()->route('userHome');
+	if($request->cookie('restaurant_id')){
+		return redirect()->route('restaurantHome')->with('alert', 'Payment Success');
+	}
+	else{
+		return redirect()->route('userHome')->with('alert', 'Payment Success');
+	}
+	
   }
 
   function arrive(Request $request){
@@ -260,5 +267,11 @@ class mainController extends Controller
 		->update(['is_arrive' => '1']);
 
 		return redirect()->route('restaurantHome');
+  }
+
+  function signOut(Request $request){
+	  $request->session()->flush();
+	  
+	  return redirect()->route('/')->withCookie(cookie::forget(['restaurant_id', 'account_id']));
   }
 }
