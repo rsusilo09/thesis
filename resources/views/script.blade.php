@@ -20,7 +20,7 @@
   <script src="/js/adminlte.min.js"></script>
   <script src="/js/icheck.min.js"></script>
   <script src="/js/demo.js"></script>
-  <script src=”https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="js/sweetalert.min.js"></script>
 @include('sweet::alert')
 </head>
 <body>
