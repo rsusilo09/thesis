@@ -205,10 +205,13 @@ class mainController extends Controller
 	$total = 0;
 
 	$transaction = DB::table('orderan')
-		->leftJoin('menu', 'orderan.menu', '=', 'menu.menu')
+		->leftJoin('menu', function($join){
+			$join->on('orderan.menu', '=', 'menu.menu');
+			$join->on('orderan.restaurant_id', '=', 'menu.restaurant_id');
+		})
 		->where([
 			['account_id', '=', $accountId],
-			// ['restaurant_id', '=', $restaurantId],
+			['restaurant_id', '=', $restaurantId],
 			['cooking', '=', '1'],
 			['paid', '=', '0']
 		])
