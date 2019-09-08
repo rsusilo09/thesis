@@ -36,19 +36,6 @@ class mainController extends Controller
 		}
 	}
 
-	function userHome(Request $request){
-		$name = $request->session()->get('name');
-		$credit = $request->session()->get('credit');
-		
-		$restaurant = DB::table('restaurant')
-			->get();
-		
-		$posRestaurant = $restaurant->values();
-		$countRestaurant = $restaurant->count();
-		
-		return view('User/homepage', compact('posRestaurant', 'countRestaurant', 'name', 'credit'));
-	}
-
 	function restaurantHome(Request $request){
 		$name = $request->session()->get('name');
 		$id = $request->cookie('restaurant_id');
@@ -102,63 +89,6 @@ class mainController extends Controller
 		return view('Restaurant/homepage', compact('posAccount', 'posReserve', 'countOrder', 'posOrder', 'sorts', 'posPay', 'name'));
 	}
 
-    function getMenu(Request $request){
-		$name = $request->session()->get('name');
-		$credit = $request->session()->get('credit');
-
-		$menu = DB::table('menu')
-			->orderBy('jenis', 'asc')
-			->where('restaurant_id', $request->restaurant_id)
-			->get();
-			
-		$countMenu = $menu->count();
-		$posMenu = $menu->values();
-
-		$id = $request->cookie('account_id');
-		$account = DB::table('account')
-			->where('id', $id)
-			->get();
-
-		$pos = $account->values();
-		
-		$request->session()->put('restaurant_id', $request->restaurant_id);
-		return view('pemesanan', compact('posMenu', 'countMenu', 'pos', 'name', 'credit'));
-	}
-
-	function pesan(Request $request){
-		$name = $request->session()->get('name');
-		$credit = $request->session()->get('credit');
-		$restaurant = $request->session()->get('restaurant_id');
-
-		$menu = DB::table('menu')
-			->orderBy('jenis', 'asc')
-			->get();
-
-		$account = $request->cookie('account_id');
-		
-		$order = orderan::all();
-		$a = 0;
-
-		foreach ($menu as $item) {
-
-			$jenis = Input::get('jenisMenu'.$a);
-			$jumlah = Input::get('jumlahMenu'.$a);
-			$order = new orderan();
-
-			$a += 1;
-
-			if($jumlah != 0 )
-			{
-				$order->menu = $jenis;
-				$order->jumlah = $jumlah;
-				$order->account_id = $account;
-				$order->restaurant_id = $restaurant;
-				$order->save();
-			}
-		}
-		return redirect()->route('pay', ['restaurant_id' => $restaurant, 'account_id' => $account])->with('alert', 'Your order has been saved');
-	}
-
 	function doneCook(Request $request){
 		$accountId = $request->account_id;
 		$restaurant_id = $request->restaurant_id;
@@ -193,7 +123,7 @@ class mainController extends Controller
 
 		$count = $order->count();
 		$pos = $order->values();
-
+		dd($pos);
 		return view('payment', compact('pos', 'total', 'order', 'name', 'credit', 'restaurant', 'id'));
 	}
 
