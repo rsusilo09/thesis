@@ -121,10 +121,28 @@ class mainController extends Controller
 			])
 			->get();
 
-		$count = $order->count();
-		$pos = $order->values();
-		dd($pos);
-		return view('payment', compact('pos', 'total', 'order', 'name', 'credit', 'restaurant', 'id'));
+		$detail = DB::table('menu')
+			->where('restaurant_id', '=', $request->restaurant_id)
+			->get();
+
+		$countOrder = $order->count();
+		$countDetail = $detail->count();
+		$posOrder = $order->values();
+		$posDetail = $detail->values();
+
+		$response = [];
+		foreach ($posOrder as $order) {
+			foreach($posDetail as $detail) {
+				if($order->menu == $detail->menu){
+					$result = $order;
+					$result->harga = $detail->harga;
+
+					array_push($response, $result);
+				}
+			}
+		}
+		dd($response);
+		return view('payment', compact('response', 'total', 'order', 'name', 'credit', 'restaurant', 'id'));
 	}
 
   function paid(Request $request){

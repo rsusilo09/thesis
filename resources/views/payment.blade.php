@@ -10,7 +10,7 @@
           <ul class="nav navbar-nav">
             <li class="dropdown user user-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <span class="hidden-xs">{{$name}}tes</span>
+                <span class="hidden-xs">{{$name}}</span>
               </a>
               <ul class="dropdown-menu">
                 <li class="user-body">
@@ -53,12 +53,11 @@
               <!-- /.box-header -->
               <div class="box-body no-padding">
                 <table class="table">
-                  @foreach ($pos as $item)
+                  @foreach ($response as $item)
                     <tr>
                       <td>{{$item->menu}}</td>
-                      <td>{{$item->jumlah}}</td>
-                      {{-- <td>{{$item->harga}}</td>
-                      <td>Rp {{($item->harga * $item->jumlah)}} --}}
+                      <td>{{$item->jumlah}} @ Rp {{$item->harga}}</td>
+                      <td>Rp {{($item->harga * $item->jumlah)}}</td>
                     </tr>
                   @endforeach
                 </table>
