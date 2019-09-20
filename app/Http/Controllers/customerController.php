@@ -51,8 +51,6 @@ class customerController extends Controller
     }
     
     function pesan(Request $request){
-		$name = $request->session()->get('name');
-		$credit = $request->session()->get('credit');
 		$restaurant = $request->session()->get('restaurant_id');
 
 		$menu = DB::table('menu')
@@ -82,5 +80,31 @@ class customerController extends Controller
 			}
 		}
 		return redirect()->route('pay', ['restaurant_id' => $restaurant, 'account_id' => $account])->with('alert', 'Your order has been saved');
+	}
+
+	function search(Request $request){
+		$name = $request->session()->get('name');
+		$credit = $request->session()->get('credit');
+		$key = Input::get('s');
+
+		$menu = DB::table('menu')
+			->orderBy('jenis', 'asc')
+			->where([
+				'restaurant_id', '=', $request->restaurant_id,
+				'menu', 'LIKE', $key])
+			->get();
+			
+		$countMenu = $menu->count();
+		$posMenu = $menu->values();
+
+		$id = $request->cookie('account_id');
+		$account = DB::table('account')
+			->where('id', $id)
+			->get();
+
+		$pos = $account->values();
+		
+		$request->session()->put('restaurant_id', $request->restaurant_id);
+		return view('pemesanan', compact('posMenu', 'countMenu', 'pos', 'name', 'credit'));
 	}
 }

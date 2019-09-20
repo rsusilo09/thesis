@@ -43,14 +43,14 @@
             <table class="table">
               <tr>
                 <th>
-                  <form>
+                  {!! Form::open(array('route' => 'cari', 'method' => 'POST')) !!} 
                   <div class="input-group col-sm-5">
                     <input type="text" name="s" class="form-control" placeholder="Enter keywords..">
                     <span class="input-group-btn">
                       <button type="submit" class="btn btn-flat" name="search">Search</button>
                     </span>
                   </div>
-                  </form>
+                  {!! Form::close() !!}
                 </th>
               </tr>
               <tr>

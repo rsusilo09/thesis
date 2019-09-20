@@ -24,6 +24,7 @@ Route::get('paid/{restaurant_id}/{account_id}', ['as'=>'paid', 'uses'=>'mainCont
 Route::get('userHome', ['uses'=>'customerController@userHome', 'as'=>'userHome']);
 Route::get('menu/{restaurant_id}', 'customerController@getMenu');
 Route::post('pesan', ['as'=>'pesan', 'uses'=>'customerController@pesan']);
+Route::post('cari', ['as'=>'cari', 'uses'=>'customerController@search']);
 
 // Restaurant Routes
 Route::get('restaurantHome', ['uses'=>'mainController@restaurantHome', 'as'=>'restaurantHome']);

@@ -141,7 +141,7 @@ class mainController extends Controller
 				}
 			}
 		}
-		dd($response);
+		
 		return view('payment', compact('response', 'total', 'order', 'name', 'credit', 'restaurant', 'id'));
 	}
 
