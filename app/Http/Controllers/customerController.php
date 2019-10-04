@@ -89,9 +89,7 @@ class customerController extends Controller
 
 		$menu = DB::table('menu')
 			->orderBy('jenis', 'asc')
-			->where([
-				'restaurant_id', '=', $request->restaurant_id,
-				'menu', 'LIKE', $key])
+			->where('menu', 'LIKE', '%'.$key.'%')
 			->get();
 			
 		$countMenu = $menu->count();
@@ -103,7 +101,7 @@ class customerController extends Controller
 			->get();
 
 		$pos = $account->values();
-		
+		dd($key, $posMenu);
 		$request->session()->put('restaurant_id', $request->restaurant_id);
 		return view('pemesanan', compact('posMenu', 'countMenu', 'pos', 'name', 'credit'));
 	}
