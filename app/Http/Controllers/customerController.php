@@ -95,14 +95,22 @@ class customerController extends Controller
 		$countMenu = $menu->count();
 		$posMenu = $menu->values();
 
+		$restaurant = DB::table('restaurant')
+			->where('name', 'LIKE', '%'.$key.'%')
+			->get();
+			
+		$countRest = $restaurant->count();
+		$posRest = $restaurant->values();
+
 		$id = $request->cookie('account_id');
 		$account = DB::table('account')
 			->where('id', $id)
 			->get();
 
 		$pos = $account->values();
-		dd($key, $posMenu);
+		
 		$request->session()->put('restaurant_id', $request->restaurant_id);
-		return view('pemesanan', compact('posMenu', 'countMenu', 'pos', 'name', 'credit'));
+		
+		return view('pemesanan', compact('posMenu', 'countMenu', 'pos', 'name', 'credit', 'posRest', 'countRest'));
 	}
 }
