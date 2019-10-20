@@ -111,6 +111,6 @@ class customerController extends Controller
 		
 		$request->session()->put('restaurant_id', $request->restaurant_id);
 		
-		return view('pemesanan', compact('posMenu', 'countMenu', 'pos', 'name', 'credit', 'posRest', 'countRest'));
+		return view('user/search', compact('posMenu', 'countMenu', 'pos', 'name', 'credit', 'posRest', 'countRest'));
 	}
 }
