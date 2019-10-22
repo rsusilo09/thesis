@@ -40,7 +40,7 @@
           <li><a href="#menu" data-toggle="tab">Menu</a></li>
         </ul>
         <div class="tab-content">
-          <div class="active tab-pane" id="Restaurant">
+          <div class="active tab-pane" id="restaurant">
             <div class="restaurant">
                 <table class="table">
                     <tr>
@@ -59,21 +59,26 @@
             </div>
           </div>
 
-          <div class="tab-pane" id="Menu">
+          <div class="tab-pane" id="menu">
             <div class="menu">
                 <table class="table">
                     <tr>
                       <th style="width: 10px">#</th>
-                      <th>Name</th>
                       <th>Restaurant</th>
                     </tr>
-                    @for($a=0;$a<$countRest;$a++)
+                    @foreach ($response as $rest)
                     <tr>
-                      <td>{{$a+1}}</td>
-                      <td><a href= "{{ url ('menu', $posRest[$a]->id) }}">{{$posRest[$a]->name}}</a></td>
-                      <td>{{$posRest[$a]->address}}</td>
+                      <td>{{$loop->iteration}}</td>
+                      <td><a href= "{{ url ('menu', $rest->id) }}">{{$rest->name}}</a></td>
                     </tr>
-                    @endfor
+                    @foreach($rest->menu as $menu)
+                    <tr>
+                        <td></td>
+                        <td>{{$menu->menu}}</td>
+                        <td>{{$menu->harga}}</td>
+                    </tr>
+                    @endforeach 
+                    @endforeach
                 </table> 
             </div>
           </div>

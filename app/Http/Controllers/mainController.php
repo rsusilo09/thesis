@@ -146,6 +146,7 @@ class mainController extends Controller
 	}
 
   function paid(Request $request){
+	  //Update ke Bill Table
 	$accountId = $request->account_id;
 	$restaurantId = $request->restaurant_id;
 
@@ -193,7 +194,7 @@ class mainController extends Controller
     DB::table('orderan')
 		->where([
 				['account_id', '=', $accountId],
-				['restaurant_id', '=', $restaurant_id],
+				['restaurant_id', '=', $restaurantId],
 				['cooking', '=', '1'],
 				['paid', '=', '0'],
 				['is_arrive', '=', '1']

@@ -87,6 +87,13 @@ class customerController extends Controller
 		$credit = $request->session()->get('credit');
 		$key = Input::get('s');
 
+		$id = $request->cookie('account_id');
+		$account = DB::table('account')
+			->where('id', $id)
+			->get();
+
+		$pos = $account->values();
+
 		$menu = DB::table('menu')
 			->orderBy('jenis', 'asc')
 			->where('menu', 'LIKE', '%'.$key.'%')
@@ -102,15 +109,30 @@ class customerController extends Controller
 		$countRest = $restaurant->count();
 		$posRest = $restaurant->values();
 
-		$id = $request->cookie('account_id');
-		$account = DB::table('account')
-			->where('id', $id)
+		$all = DB::table('restaurant')
 			->get();
 
-		$pos = $account->values();
-		
+		$countAll = $all->count();
+		$posAll = $all->values();
+
+		$response = [];
+
+		foreach ($posAll as $a) {
+			$menuTemp = [];
+			$temp = $a;
+
+			foreach ($posMenu as $menu) {
+				if($a->id == $menu->restaurant_id){
+					array_push($menuTemp, $menu);		
+				}
+			}
+			if($menuTemp){
+				$temp->menu = $menuTemp;
+				array_push($response, $temp);
+			}
+		}	
 		$request->session()->put('restaurant_id', $request->restaurant_id);
 		
-		return view('user/search', compact('posMenu', 'countMenu', 'pos', 'name', 'credit', 'posRest', 'countRest'));
+		return view('User/search', compact('response', 'pos', 'name', 'credit', 'posRest', 'countRest'));
 	}
 }
