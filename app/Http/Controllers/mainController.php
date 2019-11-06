@@ -153,22 +153,35 @@ class mainController extends Controller
 	$accountCookies = $request->cookie('account_id');
 	$total = 0;
 
-	$transaction = DB::table('orderan')
-		->leftJoin('menu', function($join){
-			$join->on('orderan.menu', '=', 'menu.menu');
-			$join->on('orderan.restaurant_id', '=', 'menu.restaurant_id');
-		})
-		->where([
-			['account_id', '=', $accountId],
-			['restaurant_id', '=', $restaurantId],
-			['cooking', '=', '1'],
-			['paid', '=', '0']
-		])
-		->get();
-	
-	$posTransaxtion = $transaction->values();
+	$order = DB::table('orderan')
+			->where([
+				['account_id', '=', $request->account_id],
+				['restaurant_id', '=', $request->restaurant_id]
+			])
+			->get();
 
-	foreach ($posTransaxtion as $item) {
+		$detail = DB::table('menu')
+			->where('restaurant_id', '=', $request->restaurant_id)
+			->get();
+
+		$countOrder = $order->count();
+		$countDetail = $detail->count();
+		$posOrder = $order->values();
+		$posDetail = $detail->values();
+
+		$posTransaction = [];
+		foreach ($posOrder as $order) {
+			foreach($posDetail as $detail) {
+				if($order->menu == $detail->menu){
+					$result = $order;
+					$result->harga = $detail->harga;
+
+					array_push($posTransaction, $result);
+				}
+			}
+		}
+
+	foreach ($posTransaction as $item) {
 		$total += ($item->jumlah * $item->harga);
 	}
 
@@ -195,7 +208,6 @@ class mainController extends Controller
 		->where([
 				['account_id', '=', $accountId],
 				['restaurant_id', '=', $restaurantId],
-				['cooking', '=', '1'],
 				['paid', '=', '0'],
 				['is_arrive', '=', '1']
 		])
