@@ -149,6 +149,8 @@ class mainController extends Controller
 	  //Update ke Bill Table
 	$accountId = $request->account_id;
 	$restaurantId = $request->restaurant_id;
+	$name = $request->session()->get('name');
+	$credit = $request->session()->get('credit');
 
 	$accountCookies = $request->cookie('account_id');
 	$total = 0;
@@ -164,8 +166,6 @@ class mainController extends Controller
 			->where('restaurant_id', '=', $request->restaurant_id)
 			->get();
 
-		$countOrder = $order->count();
-		$countDetail = $detail->count();
 		$posOrder = $order->values();
 		$posDetail = $detail->values();
 
@@ -213,12 +213,14 @@ class mainController extends Controller
 		])
 		->update(['paid' => '1']);
 
-	if($request->cookie('restaurant_id')){
-		return redirect()->route('restaurantHome')->with('alert', 'Payment Success');
-	}
-	else{
-		return redirect()->route('userHome')->with('alert', 'Payment Success');
-	}
+	// if($request->cookie('restaurant_id')){
+	// 	return redirect()->route('restaurantHome')->with('alert', 'Payment Success');
+	// }
+	// else{
+	// 	return redirect()->route('userHome')->with('alert', 'Payment Success');
+	// }
+	// dd($total);
+	return view('detailBill', compact('posTransaction', 'total'));
 	
   }
 

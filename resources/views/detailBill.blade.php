@@ -70,12 +70,12 @@
           </tr>
           </thead>
           <tbody>
-          @foreach ($posMenu as $item)
+          @foreach ($posTransaction as $item)
             <tr>
-                <td>$item->jumlah</td>
-                <td>$item->menu</td>
-                <td>$item->harga</td>
-                <td>($item->jumlah * $item->harga)</td>
+                <td>{{$item->jumlah}}</td>
+                <td>{{$item->menu}}</td>
+                <td>{{$item->harga}}</td>
+                <td>{{($item->jumlah * $item->harga)}}</td>
             </tr>    
           @endforeach
           </tbody>
@@ -92,20 +92,8 @@
         <div class="table-responsive">
           <table class="table">
             <tr>
-              <th style="width:50%">Subtotal:</th>
-              <td>$250.30</td>
-            </tr>
-            <tr>
-              <th>Tax (9.3%)</th>
-              <td>$10.34</td>
-            </tr>
-            <tr>
-              <th>Shipping:</th>
-              <td>$5.80</td>
-            </tr>
-            <tr>
-              <th>Total:</th>
-              <td>$265.24</td>
+              <th style="width:50%">Total:</th>
+              <td>Rp {{$total}}</td>
             </tr>
           </table>
         </div>
